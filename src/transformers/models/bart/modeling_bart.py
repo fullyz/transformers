@@ -645,7 +645,7 @@ class BartDecoder(BartPreTrainedModel):
         )
 
         # embed positions
-        positions = self.embed_positions(input, past_key_values_length, position_ids=position_ids)
+        positions = self.embed_positions(input_ids, past_key_values_length, position_ids=position_ids)
         positions = positions.to(inputs_embeds.device)
 
         hidden_states = inputs_embeds + positions
@@ -1043,6 +1043,8 @@ class BartForSequenceClassification(BartPreTrainedModel):
         )
         hidden_states = outputs[0]  # last hidden state
 
+        if input_ids is None:
+            raise ValueError("You have to specify input_ids")
         eos_mask = input_ids.eq(self.config.eos_token_id).to(hidden_states.device)
 
         torch_compilable_check(

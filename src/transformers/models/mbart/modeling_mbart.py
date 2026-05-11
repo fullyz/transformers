@@ -727,7 +727,7 @@ class MBartDecoder(MBartPreTrainedModel):
         )
 
         # embed positions
-        position_ids = self.embed_positions(input, past_key_values_length, position_ids=position_ids)
+        position_ids = self.embed_positions(input_ids, past_key_values_length, position_ids=position_ids)
 
         hidden_states = inputs_embeds + position_ids.to(inputs_embeds.device)
         hidden_states = self.layernorm_embedding(hidden_states)
@@ -1122,6 +1122,8 @@ class MBartForSequenceClassification(MBartPreTrainedModel):
         )
         hidden_states = outputs[0]  # last hidden state
 
+        if input_ids is None:
+            raise ValueError("You have to specify input_ids")
         eos_mask = input_ids.eq(self.config.eos_token_id).to(hidden_states.device)
 
         torch_compilable_check(
